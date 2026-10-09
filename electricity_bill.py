@@ -1,32 +1,74 @@
+def validate_input(units):
+    """
+    Validate if input is valid (positive number).
+    Returns True if valid, False otherwise.
+    """
+    try:
+        value = float(units)
+        
+        # Check for negative values
+        if value < 0:
+            print("Error: Units cannot be negative!")
+            return False
+        
+        # Check for zero value
+        if value == 0:
+            print("Error: Units cannot be zero!")
+            return False
+        
+        return True
+    
+    except ValueError:
+        # Character or invalid input
+        print("Error: Invalid input! Please enter a valid numeric value.")
+        return False
+    except TypeError:
+        print("Error: Input type is not supported!")
+        return False
+
+
 def calculate_bill(units):
     """Calculate electricity bill based on units consumed."""
-    if units <= 0:
-        return 0
+    slabs = [
+        (50, 3.0),
+        (100, 4.5),
+        (200, 6.0),
+        (float("inf"), 8.0)
+    ]
     
-    # Define slabs and rates
-    slabs = [(100, 5), (200, 7), (300, 10), (float('inf'), 12)]
-    
-    bill = 0
-    prev_limit = 0
+    total = 0.0
+    remaining = units
     
     for limit, rate in slabs:
-        if units > prev_limit:
-            consumed = min(units, limit) - prev_limit
-            bill += consumed * rate
-            prev_limit = limit
-        else:
+        if remaining <= 0:
             break
+        used = min(remaining, limit)
+        total += used * rate
+        remaining -= used
     
-    return bill
+    return total
+
 
 # Main program
 if __name__ == "__main__":
-    try:
-        units = float(input("Enter units consumed: "))
-        bill = calculate_bill(units)
-        print(f"\n{'=' * 30}")
-        print(f"Units Consumed: {units} kWh")
-        print(f"Total Bill: Rs. {bill:.2f}")
-        print(f"{'=' * 30}\n")
-    except ValueError:
-        print("Invalid input! Please enter a valid number.")
+    print("=" * 40)
+    print("ELECTRICITY BILL CALCULATOR")
+    print("=" * 40)
+    
+    while True:
+        units_input = input("\nEnter units consumed (or 'quit' to exit): ")
+        
+        if units_input.lower() == 'quit':
+            print("Thank you for using the calculator!")
+            break
+        
+        if validate_input(units_input):
+            units = float(units_input)
+            bill = calculate_bill(units)
+            
+            print(f"\n{'-' * 40}")
+            print(f"Units Consumed: {units} kWh")
+            print(f"Total Bill: Rs. {bill:.2f}")
+            print(f"{'-' * 40}\n")
+        else:
+            print("Please try again with a valid input.\n")
